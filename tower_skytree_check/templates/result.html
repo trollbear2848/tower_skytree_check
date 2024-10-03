@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>識別結果</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        .result-box {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        .result-box h2 {
+            color: #333;
+        }
+        .result-box p {
+            font-size: 18px;
+            color: #555;
+        }
+        .home-link {
+            margin-top: 20px;
+            display: block;
+            font-size: 16px;
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .home-link:hover {
+            color: #45a049;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-box">
+        <h2>識別結果</h2>
+        <p>{{ prediction|safe }}</p> <!-- safeフィルターで改行タグを解釈 -->
+        
+        <!-- 白黒加工された画像のプレビュー -->
+        <img src="/{{ image_url }}" alt="Processed image preview">
+        
+        <a class="home-link" href="/">別の画像を識別する</a>
+    </div>
+</body>
+</html>
