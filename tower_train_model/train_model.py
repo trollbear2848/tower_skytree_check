@@ -4,15 +4,15 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # データの前処理
-train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
+train_datagen = ImageDataGenerator(rescale=1./255)
 # データの前処理（グレースケール画像を使用）
-train_datagen = ImageDataGenerator(rescale=1./255, shear_range=0.2, zoom_range=0.2, horizontal_flip=True)
+train_datagen = ImageDataGenerator(rescale=1./255)
 
 # グレースケール画像としてデータをロード
 train_generator = train_datagen.flow_from_directory(
     'data/train',
     target_size=(90, 160),
-    batch_size=64,
+    batch_size=32,
     class_mode='binary',
     color_mode='grayscale'  # ここでグレースケールに設定
 )
@@ -36,4 +36,4 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 model.fit(train_generator, epochs=20)
 print(train_generator.class_indices)
 # モデルの保存
-model.save('L2N200R800B64E20.h5')
+model.save('L2N200R800B32E20.h5')
