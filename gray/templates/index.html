@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <title>フォルダをアップロード</title>
+  </head>
+  <body>
+    <h1>フォルダをZIPファイルとしてアップロードしてください</h1>
+    <form method="post" action="/upload" enctype="multipart/form-data">
+      <label for="file">ZIPファイル:</label>
+      <input type="file" id="file" name="file" accept=".zip">
+      <input type="submit" value="アップロード">
+    </form>
+  </body>
+</html>
