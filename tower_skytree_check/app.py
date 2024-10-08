@@ -39,7 +39,7 @@ def predict():
 
     # 画像の読み込みと加工（RGBに変換）
     img = Image.open(filepath).convert('RGB')
-    img = ImageOps.exif_transpose(img)  # メタデータに基づいて回転
+    img = ImageOps.exif_transpose(img) 
 
     # 90x160にリサイズ
     img = img.resize((90, 160))
