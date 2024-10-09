@@ -10,7 +10,7 @@ train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
     'data/train',
     target_size=(90, 160),
-    batch_size=32,
+    batch_size=16,
     class_mode='binary',
     color_mode='grayscale'  
 )
