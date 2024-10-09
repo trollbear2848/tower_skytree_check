@@ -24,7 +24,7 @@ model = Sequential([
     Conv2D(128, (3, 3), activation='relu'),
     MaxPooling2D(pool_size=(2, 2)),
     Flatten(),
-    Dropout(0.5), 
+    Dropout(0.2), 
     Dense(128, activation='relu'),
     Dense(1, activation='sigmoid')
 ])

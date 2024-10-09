@@ -15,7 +15,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
 
 # モデルの読み込み
-model = load_model('L2N200R800B16E20.h5')
+model = load_model('h5/L2N200R800B32D02E20.h5')
 
 # ホームページのルートを定義
 @app.route('/')
