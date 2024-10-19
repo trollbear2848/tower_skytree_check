@@ -10,22 +10,22 @@ train_datagen = ImageDataGenerator(rescale=1./255)
 train_generator = train_datagen.flow_from_directory(
     'data/train',
     target_size=(90, 160),
-    batch_size=16,
+    batch_size=32,
     class_mode='binary',
-    color_mode='grayscale'  
+    color_mode='grayscale'
 )
 
 # モデルの構築
 model = Sequential([
-    Conv2D(32, (3, 3), activation='relu', input_shape=(90, 160, 1)), 
+    Conv2D(32, (3, 3), activation='relu', input_shape=(90, 160, 1)),
     MaxPooling2D(pool_size=(2, 2)),
     Conv2D(64, (3, 3), activation='relu'),
     MaxPooling2D(pool_size=(2, 2)),
     Conv2D(128, (3, 3), activation='relu'),
     MaxPooling2D(pool_size=(2, 2)),
     Flatten(),
-    Dropout(0.2), 
     Dense(128, activation='relu'),
+    Dropout(0.2),
     Dense(1, activation='sigmoid')
 ])
 
@@ -34,6 +34,8 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 
 # モデルのトレーニング
 model.fit(train_generator, epochs=10)
+
+# クラスインデックスの表示
 print(train_generator.class_indices)
 
 # モデルの保存

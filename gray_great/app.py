@@ -62,7 +62,7 @@ def upload_files():
                 img = apply_random_transformations(img)
                 
                 # 90x160にリサイズ
-                img = img.resize((90, 160))
+                # img = img.resize((90, 160))
                 
                 # 変換された画像を保存
                 processed_path = os.path.join(app.config['PROCESSED_FOLDER'], 'processed_' + filename)
@@ -83,7 +83,7 @@ def apply_random_transformations(img):
     """画像にランダムなシフト、拡大縮小、回転、ぼかし、背景除去を適用"""
     
     # 背景除去を適用
-    img = remove_background(img)
+    # img = remove_background(img)
     
     # ランダムに回転 (0~360度)
     if random.random() > 0.5:
@@ -107,7 +107,7 @@ def remove_background(img):
     """OpenCVを使って画像から背景を除去する"""
     # PIL画像をOpenCVの形式に変換
     cv_img = np.array(img)
-    cv_img = cv_img[:, :, ::-1].copy()  # RGB -> BGR
+    cv_img = cv_img[:, :, ::-1].copy()  
 
     # グレースケールに変換
     gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
@@ -133,7 +133,7 @@ def remove_background(img):
     final_img = np.where(result == 0, background, result)
 
     # OpenCV形式からPIL画像に戻す
-    final_img = Image.fromarray(final_img[:, :, ::-1])  # BGR -> RGB
+    final_img = Image.fromarray(final_img[:, :, ::-1]) 
     return final_img
 
 if __name__ == '__main__':

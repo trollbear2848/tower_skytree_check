@@ -1,0 +1,5 @@
+必要ライブラリ
+flask tensorflow pillow numpy
+
+必要フォルダ
+uploads processed h5

@@ -1,0 +1,7 @@
+分類は２つのみ
+
+必要ライブラリ
+tensorflow pillow
+
+必要フォルダ
+data/train/分類したいもの
