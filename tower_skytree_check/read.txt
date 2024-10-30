@@ -1,5 +1,5 @@
 必要ライブラリ
-flask tensorflow pillow numpy
+flask tensorflow pillow numpy rembg
 
 必要フォルダ
 uploads processed h5
