@@ -4,4 +4,4 @@
 tensorflow pillow
 
 必要フォルダ
-data/train/分類したいもの
+data/train/分類したいもの2つ

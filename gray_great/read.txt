@@ -1,5 +1,6 @@
 必要ライブラリ
 flask pillow opencv-python numpy
 
+
 必要フォルダ
 uploads processed

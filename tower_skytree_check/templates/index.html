@@ -2,14 +2,15 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>画像アップロード</title>
+    <title>画像分類アプリ</title>
 </head>
 <body>
-    <h1>画像アップロード</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <button type="submit">アップロード</button>
+    <h1>画像分類アプリ</h1>
+    <form method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+        <label for="file">画像ファイルをアップロード:</label>
+        <input type="file" id="file" name="file" required>
+        <br>
+        <button type="submit">アップロードして分類</button>
     </form>
 </body>
 </html>

@@ -1,0 +1,2 @@
+必要ライブラリ
+flask opencv-python rembg

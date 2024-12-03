@@ -1,10 +1,11 @@
 from flask import Flask, request, render_template, send_from_directory
 from werkzeug.utils import secure_filename
-from PIL import Image, ImageOps, ImageEnhance, ImageFilter
+from PIL import Image, ImageOps, ImageEnhance, ImageFilter, ImageChops
 import os
 import zipfile
 import random
 import cv2
+from rembg import remove
 import numpy as np
 
 app = Flask(__name__)
@@ -14,7 +15,6 @@ app.config['PROCESSED_FOLDER'] = 'processed'
 # アップロードフォルダと処理済みフォルダを作成
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
-
 if not os.path.exists(app.config['PROCESSED_FOLDER']):
     os.makedirs(app.config['PROCESSED_FOLDER'])
 
@@ -35,106 +35,76 @@ def upload_files():
     zip_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(zip_path)
     
-    # ZIPファイルを解凍
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(app.config['UPLOAD_FOLDER'])
-
-    # 解凍されたフォルダのパス
+    # 解凍先のフォルダ名を明示的に定義
     folder_name = os.path.splitext(filename)[0]
     folder_path = os.path.join(app.config['UPLOAD_FOLDER'], folder_name)
-
-    processed_files = []
     
+    # ZIPファイルを解凍
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(folder_path)
+    
+    processed_files = []
     for filename in os.listdir(folder_path):
         file_path = os.path.join(folder_path, filename)
-        
         if os.path.isfile(file_path):
             try:
                 img = Image.open(file_path)
-                
                 # EXIFデータに基づいて正しい向きに回転
                 img = ImageOps.exif_transpose(img)
-                
                 # グレースケールに変換
                 img = img.convert('L')
-                
-                # 背景除去とランダムな変換を適用
-                img = apply_random_transformations(img)
-                
-                # 90x160にリサイズ
-                # img = img.resize((90, 160))
-                
-                # 変換された画像を保存
-                processed_path = os.path.join(app.config['PROCESSED_FOLDER'], 'processed_' + filename)
-                img.save(processed_path)
-                
-                processed_files.append('processed_' + filename)
+
+                # 各画像をn回処理
+                for i in range(1):
+                    # ランダムな変換を適用
+                    transformed_img = apply_random_transformations(
+                        img.copy(),
+                        rotate=request.form.get('rotate'),
+                        resize=request.form.get('resize'),
+                        shift=request.form.get('shift'),
+                        blur=request.form.get('blur'),
+                        remove_bg=request.form.get('remove_bg')
+                    )
+                    # 90x160にリサイズ
+                    transformed_img = transformed_img.resize((90, 160), Image.Resampling.LANCZOS)
+                    # 変換された画像を新しいファイル名で保存
+                    new_filename = f"processed_{i}_{random.randint(1000, 9999)}_{filename}"
+                    processed_path = os.path.join(app.config['PROCESSED_FOLDER'], new_filename)
+                    transformed_img = transformed_img.convert("RGB")  # ここでRGBに変換
+                    transformed_img.save(processed_path, format="JPEG")  # ここでJPEG形式で保存
+                    processed_files.append(new_filename)
             except Exception as e:
                 print(f"{filename} の処理に失敗しました: {e}")
                 continue
-    
     return render_template('processed.html', files=processed_files)
+
 
 @app.route('/processed/<filename>')
 def get_processed_file(filename):
     return send_from_directory(app.config['PROCESSED_FOLDER'], filename)
 
-def apply_random_transformations(img):
-    """画像にランダムなシフト、拡大縮小、回転、ぼかし、背景除去を適用"""
-    
-    # 背景除去を適用
-    # img = remove_background(img)
-    
-    # ランダムに回転 (0~360度)
-    if random.random() > 0.5:
+def apply_random_transformations(img, rotate, resize, shift, blur, remove_bg):
+    """画像にランダムなシフト、拡大縮小、回転、ぼかしを適用"""
+    if rotate and random.random() > 0.5:
         angle = random.uniform(0, 360)
         img = img.rotate(angle)
-
-    # ランダムに拡大縮小 (80%~120%)
-    if random.random() > 0.5:
+    if resize and random.random() > 0.5:
         scale_factor = random.uniform(0.8, 1.2)
         new_size = (int(img.size[0] * scale_factor), int(img.size[1] * scale_factor))
-        img = img.resize(new_size, Image.ANTIALIAS)
+        img = img.resize(new_size, Image.Resampling.LANCZOS)
         img = img.crop((0, 0, 90, 160))  # サイズを90x160にトリミング
-
-    # ランダムでぼかしを適用
-    if random.random() > 0.5:
+    if shift and random.random() > 0.5:
+        max_shift = 50  # 移動の最大ピクセル数
+        dx = random.randint(-max_shift, max_shift)
+        dy = random.randint(-max_shift, max_shift)
+        img = ImageChops.offset(img, dx, dy)
+        img = img.crop((max(0, -dx), max(0, -dy), img.width - max(0, dx), img.height - max(0, dy)))
+    if blur and random.random() > 0.5:
         img = img.filter(ImageFilter.GaussianBlur(radius=random.uniform(0, 5)))
-
+    if remove_bg:
+        img = remove(np.array(img))
+        img = Image.fromarray(img)
     return img
 
-def remove_background(img):
-    """OpenCVを使って画像から背景を除去する"""
-    # PIL画像をOpenCVの形式に変換
-    cv_img = np.array(img)
-    cv_img = cv_img[:, :, ::-1].copy()  
-
-    # グレースケールに変換
-    gray = cv2.cvtColor(cv_img, cv2.COLOR_BGR2GRAY)
-
-    # 背景をマスクするために、しきい値処理を適用
-    _, thresh = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY_INV)
-
-    # マスクを使って輪郭を見つける
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
-    # 最大の輪郭を取得（建物を囲む輪郭が背景と認識される可能性が高い）
-    max_contour = max(contours, key=cv2.contourArea)
-    
-    # 背景を白に、建物を黒にしたマスクを作成
-    mask = np.zeros_like(gray)
-    cv2.drawContours(mask, [max_contour], -1, 255, thickness=cv2.FILLED)
-    
-    # 画像にマスクを適用
-    result = cv2.bitwise_and(cv_img, cv_img, mask=mask)
-
-    # 背景を白にする
-    background = np.full_like(cv_img, 255)
-    final_img = np.where(result == 0, background, result)
-
-    # OpenCV形式からPIL画像に戻す
-    final_img = Image.fromarray(final_img[:, :, ::-1]) 
-    return final_img
-
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

@@ -1,15 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <title>フォルダをアップロード</title>
-  </head>
-  <body>
-    <h1>フォルダをZIPファイルとしてアップロードしてください</h1>
-    <form method="post" action="/upload" enctype="multipart/form-data">
-      <label for="file">ZIPファイル:</label>
-      <input type="file" id="file" name="file" accept=".zip">
-      <input type="submit" value="アップロード">
+<head>
+    <meta charset="UTF-8">
+    <title>画像加工アプリ</title>
+</head>
+<body>
+    <h1>画像加工アプリ</h1>
+    <form method="POST" action="{{ url_for('upload_files') }}" enctype="multipart/form-data">
+        <label for="file">画像ファイルをアップロード (ZIP形式):</label>
+        <input type="file" id="file" name="file" accept=".zip" required>
+        <br>
+        <input type="checkbox" id="rotate" name="rotate" checked>
+        <label for="rotate">回転</label><br>
+        <input type="checkbox" id="resize" name="resize" checked>
+        <label for="resize">拡大縮小</label><br>
+        <input type="checkbox" id="shift" name="shift" checked>
+        <label for="shift">シフト</label><br>
+        <input type="checkbox" id="blur" name="blur" checked>
+        <label for="blur">ぼかし</label><br>
+        <input type="checkbox" id="remove_bg" name="remove_bg" checked>
+        <label for="remove_bg">背景除去</label><br>
+        <button type="submit">アップロードして加工</button>
     </form>
-  </body>
+</body>
 </html>

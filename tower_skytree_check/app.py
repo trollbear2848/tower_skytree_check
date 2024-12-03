@@ -15,7 +15,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['PROCESSED_FOLDER'] = PROCESSED_FOLDER
 
 # モデルの読み込み
-model = load_model('h5/L3M150MR1350B16E10.h5')
+model = load_model('h5/L3M105B16E10.h5')
 
 def remove_background(input_path, output_path):
     input_img = cv2.imread(input_path)
@@ -39,7 +39,8 @@ def upload_file():
     input_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     file.save(input_path)
 
-    output_filename = filename.rsplit('.', 1)[0] + '.png'
+    # ファイル名を少し変更
+    output_filename = filename.rsplit('.', 1)[0] + '_bg_removed.png'
     output_path = os.path.join(app.config['PROCESSED_FOLDER'], output_filename)
 
     try:
